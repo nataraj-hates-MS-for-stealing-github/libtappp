@@ -166,6 +166,40 @@ namespace TAP {
 	inline bool is(const float& left, const float& right){
 		return is(left, right, "");
 	}
+
+	template<> inline bool is<double, double>(const double& left, const double& right, const std::string& message) {
+		double epsilon = 0.01;
+		using namespace TAP::details;
+		try {
+			bool ret = ok(2 * fabs(left - right) / (fabs(left) + fabs(right)) < epsilon);
+			if (!ret) {
+				diag(failed_test_msg()," '", message, "'");
+				diag("       Got: ", left);
+				diag("  Expected: ", right);
+			}
+			return ret;
+		}
+		catch(const std::exception& e) {
+			fail(message);
+			diag(failed_test_msg()," '", message, "'");
+			diag("Caught exception '", e.what(), "'");
+			diag("       Got: ", left);
+			diag("  Expected: ", right);
+			return false;
+		}
+		catch(...) {
+			fail(message);
+			diag(failed_test_msg()," '", message, "'");
+			diag("Caught unknown exception");
+			diag("       Got: ", left);
+			diag("  Expected: ", right);
+			return false;
+		}
+	}
+	
+	inline bool is(const double& left, const double& right){
+		return is(left, right, "");
+	}
 	
 	template<> inline bool isnt<float, float>(const float& left, const float& right, const std::string& message) {
 		double epsilon = 0.01;
@@ -190,6 +224,32 @@ namespace TAP {
 	}
 	
 	inline bool isnt(const float& left, const float& right){
+		return isnt(left, right, "");
+	}
+
+	template<> inline bool isnt<double, double>(const double& left, const double& right, const std::string& message) {
+		double epsilon = 0.01;
+		using namespace TAP::details;
+		try {
+			bool ret = 2 * fabs(left - right) / (fabs(left) + fabs(right)) > epsilon;
+			ok(ret, message);
+			return ret;
+		}
+		catch(const std::exception& e) {
+			fail(message);
+			diag(failed_test_msg()," '", message, "'");
+			diag("Caught exception '", e.what(), "'");
+			return false;
+		}
+		catch(...) {
+			fail(message);
+			diag(failed_test_msg()," '", message, "'");
+			diag("Caught unknown exception");
+			return false;
+		}
+	}
+	
+	inline bool isnt(const double& left, const double& right){
 		return isnt(left, right, "");
 	}
 	
