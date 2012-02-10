@@ -1,5 +1,5 @@
-#ifndef LIB_PERLPP_LIB_TAPPP_TAPPP_H
-#define LIB_PERLPP_LIB_TAPPP_TAPPP_H
+#ifndef LIB_TAPPP_TAPPP_H
+#define LIB_TAPPP_TAPPP_H
 
 #include <iostream>
 #include <string>
@@ -103,7 +103,7 @@ namespace TAP {
 		catch(const std::exception& e) {
 			fail(message);
 			diag(failed_test_msg()," '", message, "'");
-			diag("Cought exception '", e.what(), "'");
+			diag("Caught exception '", e.what(), "'");
 			diag("       Got: ", left);
 			diag("  Expected: ", right);
 			return false;
@@ -111,7 +111,7 @@ namespace TAP {
 		catch(...) {
 			fail(message);
 			diag(failed_test_msg()," '", message, "'");
-			diag("Cought unknown exception");
+			diag("Caught unknown exception");
 			diag("       Got: ", left);
 			diag("  Expected: ", right);
 			return false;
@@ -125,13 +125,13 @@ namespace TAP {
 		catch(const std::exception& e) {
 			fail(message);
 			diag("In test ", message);
-			diag("Cought exception: ", e.what());
+			diag("Caught exception: ", e.what());
 			return false;
 		}
 		catch(...) {
 			fail(message);
 			diag("In test ", message);
-			diag("Cought unknown exception");
+			diag("Caught unknown exception");
 			return false;
 		}
 	}
@@ -150,7 +150,7 @@ namespace TAP {
 		catch(const std::exception& e) {
 			fail(message);
 			diag(failed_test_msg()," '", message, "'");
-			diag("Cought exception '", e.what(), "'");
+			diag("Caught exception '", e.what(), "'");
 			diag("       Got: ", left);
 			diag("  Expected: ", right);
 			return false;
@@ -158,7 +158,7 @@ namespace TAP {
 		catch(...) {
 			fail(message);
 			diag(failed_test_msg()," '", message, "'");
-			diag("Cought unknown exception");
+			diag("Caught unknown exception");
 			diag("       Got: ", left);
 			diag("  Expected: ", right);
 			return false;
@@ -175,13 +175,13 @@ namespace TAP {
 		catch(const std::exception& e) {
 			fail(message);
 			diag(failed_test_msg()," '", message, "'");
-			diag("Cought exception '", e.what(), "'");
+			diag("Caught exception '", e.what(), "'");
 			return false;
 		}
 		catch(...) {
 			fail(message);
 			diag(failed_test_msg()," '", message, "'");
-			diag("Cought unknown exception");
+			diag("Caught unknown exception");
 			return false;
 		}
 	}
@@ -322,7 +322,7 @@ namespace TAP {
 	TAP::pass(_current_message);\
 	_current_message = NULL
 
-#endif /*WANT_TEST_EXTRAS*/
+#endif /* WANT_TEST_EXTRAS */
 
 
-#endif /*LIB_PERLPP_LIB_TAPPP_TAPPP_H*/
+#endif /* TAPPP_TAPPP_H */
