@@ -1,7 +1,7 @@
 #define WANT_TEST_EXTRAS
 #include <tap++/tap++.h>
 #include <stack>
-#include <boost/lexical_cast.hpp>
+#include <sstream>
 #include <cstdlib>
 
 namespace TAP {
@@ -38,7 +38,9 @@ namespace TAP {
 			has_output_plan = true;
 		}
 		inline const std::string to_string(unsigned num) throw() {
-			return boost::lexical_cast<std::string>(num);
+			std::stringstream out;
+			out << num;
+			return out.str();
 		}
 
 		inline void _done_testing(unsigned tests) throw(fatal_exception) {
@@ -113,7 +115,7 @@ namespace TAP {
 		}
 	}
 	bool summary() throw() {
-		return not_oks;
+		return (not_oks != 0);
 	}
 
 	void bail_out(const std::string& reason) throw() {
