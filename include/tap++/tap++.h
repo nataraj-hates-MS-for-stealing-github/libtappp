@@ -3,9 +3,6 @@
 
 #include <iostream>
 #include <string>
-#include <boost/type_traits/is_convertible.hpp>
-#include <boost/type_traits/is_floating_point.hpp>
-#include <boost/utility/enable_if.hpp>
 #include <cmath>
 
 namespace TAP {
@@ -15,9 +12,8 @@ namespace TAP {
 		extern std::ostream* output;
 		extern std::ostream* error;
 
-        	//Return the variant of "Failed test" or "Failed
-	        //(TODO) test" required by whether the current test is
-	        //a todo test
+		/* Return the variant of "Failed test" or "Failed                   */
+		/* (TODO) test" required by whether the current test is a todo test */
 		char const * failed_test_msg() throw();
 	}
 	class fatal_exception : public std::exception {
@@ -89,7 +85,7 @@ namespace TAP {
 		*details::output << "# " << first << second << third << fourth << fifth << std::endl;
 	}
 
-	template<typename T, typename U> typename boost::disable_if<typename boost::is_floating_point<U>::type, bool>::type is(const T& left, const U& right, const std::string& message = "") {
+	template<typename T, typename U> bool is(const T& left, const U& right, const std::string& message = "") {
 		using namespace TAP::details;
 		try {
 			bool ret = ok(left == right, message);
@@ -118,7 +114,8 @@ namespace TAP {
 		}
 	}
 
-	template<typename T, typename U> typename boost::disable_if<typename boost::is_floating_point<U>::type, bool>::type isnt(const T& left, const U& right, const std::string& message = "") {
+	template<typename T, typename U> bool isnt(const T& left, const U& right, const std::string& message = "") {
+		using namespace TAP::details;
 		try {
 			return ok(left != right, message);
 		}
@@ -135,8 +132,9 @@ namespace TAP {
 			return false;
 		}
 	}
-
-	template<typename T, typename U> typename boost::enable_if<typename boost::is_floating_point<U>::type, bool>::type is(const T& left, const U& right, const std::string& message = "", double epsilon = 0.01) {
+	
+	template<> inline bool is<float, float>(const float& left, const float& right, const std::string& message) {
+		double epsilon = 0.01;
 		using namespace TAP::details;
 		try {
 			bool ret = ok(2 * fabs(left - right) / (fabs(left) + fabs(right)) < epsilon);
@@ -164,8 +162,13 @@ namespace TAP {
 			return false;
 		}
 	}
-
-	template<typename T, typename U> typename boost::enable_if<typename boost::is_floating_point<U>::type, bool>::type isnt(const T& left, const U& right, const std::string& message = "", double epsilon = 0.01) {
+	
+	inline bool is(const float& left, const float& right){
+		return is(left, right, "");
+	}
+	
+	template<> inline bool isnt<float, float>(const float& left, const float& right, const std::string& message) {
+		double epsilon = 0.01;
 		using namespace TAP::details;
 		try {
 			bool ret = 2 * fabs(left - right) / (fabs(left) + fabs(right)) > epsilon;
@@ -185,15 +188,11 @@ namespace TAP {
 			return false;
 		}
 	}
-
-	template<typename T, typename U> bool is_convertible(const std::string& message) {
-		return ok(boost::is_convertible<T, U>::value, message);
+	
+	inline bool isnt(const float& left, const float& right){
+		return isnt(left, right, "");
 	}
-
-	template<typename T, typename U> bool is_inconvertible(const std::string& message) {
-		return ok(!boost::is_convertible<T, U>::value, message);
-	}
-
+	
 	extern std::string TODO; 
 
 	class todo_guard {
@@ -325,4 +324,4 @@ namespace TAP {
 #endif /* WANT_TEST_EXTRAS */
 
 
-#endif /* TAPPP_TAPPP_H */
+#endif /* LIB_TAPPP_TAPPP_H */
