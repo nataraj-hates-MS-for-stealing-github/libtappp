@@ -1,4 +1,7 @@
+ifndef CXX
 CXX = g++
+endif
+
 ACK = ack
 LIB = libtap++.so
 WARNINGS = -Wall -Wextra -Weffc++
