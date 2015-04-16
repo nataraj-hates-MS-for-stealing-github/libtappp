@@ -1,15 +1,12 @@
-ifndef CXX
-CXX = g++
-endif
-
-ACK = ack
-LIB = libtap++.so
-WARNINGS = -Wall -Wextra -Weffc++
-DEBUG = -ggdb3 -DDEBUG
-CXXFLAGS = $(DEBUG) $(WARNINGS) -fPIC
-PREFIX=/usr/local
-LIBRARY_VAR=LD_LIBRARY_PATH
-TEST_GOALS = t/00-sanity.t
+CXX ?= g++
+ACK := ack
+LIB := libtap++.so
+WARNINGS := -Wall -Wextra -Weffc++
+DEBUG := -ggdb3 -DDEBUG
+CXXFLAGS := $(DEBUG) $(WARNINGS) -fPIC
+PREFIX := /usr/local
+LIBRARY_VAR := LD_LIBRARY_PATH
+TEST_GOALS := t/00-sanity.t
 
 all: $(LIB)
 
