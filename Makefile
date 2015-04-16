@@ -17,7 +17,7 @@ $(LIB): src/tap++.cpp include/tap++/tap++.h
 	$(CXX) -shared -o $@ -Wl,-soname,$(LIB) $(CXXFLAGS) -Iinclude/ src/*.cpp
 
 t/%.t: t/%.cpp $(LIB)
-	$(CXX) $(CXXFLAGS) -L. -ltap++ -Iinclude -o $@ $<
+	$(CXX) $(CXXFLAGS) -Iinclude -o $@ $< -L. -ltap++
 
 testbuild: $(TEST_GOALS)
 
