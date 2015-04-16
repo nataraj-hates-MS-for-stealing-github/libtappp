@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <cmath>
+#include <limits>
 
 namespace TAP {
 	namespace details {
@@ -132,12 +133,18 @@ namespace TAP {
 			return false;
 		}
 	}
-	
+
+  extern double EPSILON;
+
 	template<> inline bool is<float, float>(const float& left, const float& right, const std::string& message) {
-		double epsilon = 0.01;
 		using namespace TAP::details;
 		try {
-			bool ret = ok(2 * fabs(left - right) / (fabs(left) + fabs(right)) < epsilon);
+      double diff = fabs(left - right);
+      bool ret = ok(
+          ( left == right ) || // Shortcut for equality
+          ( (left == 0. || right == 0. || diff < std::numeric_limits<float>::min()) && // Very small numbers
+            diff < EPSILON * std::numeric_limits<float>::min() ) ||
+          ( 2. * diff / fmin(fabs(left) + fabs(right), std::numeric_limits<float>::max()) < EPSILON ), message ); // Relative error
 			if (!ret) {
 				diag(failed_test_msg()," '", message, "'");
 				diag("       Got: ", left);
@@ -162,16 +169,20 @@ namespace TAP {
 			return false;
 		}
 	}
-	
+
 	inline bool is(const float& left, const float& right){
 		return is(left, right, "");
 	}
 
 	template<> inline bool is<double, double>(const double& left, const double& right, const std::string& message) {
-		double epsilon = 0.01;
 		using namespace TAP::details;
 		try {
-			bool ret = ok(2 * fabs(left - right) / (fabs(left) + fabs(right)) < epsilon);
+      double diff = fabs(left - right);
+      bool ret = ok(
+          ( left == right ) || // Shortcut for equality
+          ( (left == 0. || right == 0. || diff < std::numeric_limits<double>::min()) && // Very small numbers
+            diff < EPSILON * std::numeric_limits<double>::min() ) ||
+          ( 2. * diff / fmin(fabs(left) + fabs(right), std::numeric_limits<double>::max()) < EPSILON ), message ); // Relative error
 			if (!ret) {
 				diag(failed_test_msg()," '", message, "'");
 				diag("       Got: ", left);
@@ -196,17 +207,20 @@ namespace TAP {
 			return false;
 		}
 	}
-	
+
 	inline bool is(const double& left, const double& right){
 		return is(left, right, "");
 	}
-	
+
 	template<> inline bool isnt<float, float>(const float& left, const float& right, const std::string& message) {
-		double epsilon = 0.01;
 		using namespace TAP::details;
 		try {
-			bool ret = 2 * fabs(left - right) / (fabs(left) + fabs(right)) > epsilon;
-			ok(ret, message);
+      double diff = fabs(left - right);
+      bool ret = ok(!(
+          ( left == right ) || // Shortcut for equality
+          ( (left == 0. || right == 0. || diff < std::numeric_limits<float>::min()) && // Very small numbers
+            diff < EPSILON * std::numeric_limits<float>::min() ) ||
+          ( 2. * diff / fmin(fabs(left) + fabs(right), std::numeric_limits<float>::max()) < EPSILON )), message ); // Relative error
 			return ret;
 		}
 		catch(const std::exception& e) {
@@ -222,17 +236,20 @@ namespace TAP {
 			return false;
 		}
 	}
-	
+
 	inline bool isnt(const float& left, const float& right){
 		return isnt(left, right, "");
 	}
 
 	template<> inline bool isnt<double, double>(const double& left, const double& right, const std::string& message) {
-		double epsilon = 0.01;
 		using namespace TAP::details;
 		try {
-			bool ret = 2 * fabs(left - right) / (fabs(left) + fabs(right)) > epsilon;
-			ok(ret, message);
+      double diff = fabs(left - right);
+      bool ret = ok(!(
+          ( left == right ) || // Shortcut for equality
+          ( (left == 0. || right == 0. || diff < std::numeric_limits<double>::min()) && // Very small numbers
+            diff < EPSILON * std::numeric_limits<double>::min() ) ||
+          ( 2. * diff / fmin(fabs(left) + fabs(right), std::numeric_limits<double>::max()) < EPSILON )), message ); // Relative error
 			return ret;
 		}
 		catch(const std::exception& e) {
@@ -248,12 +265,12 @@ namespace TAP {
 			return false;
 		}
 	}
-	
+
 	inline bool isnt(const double& left, const double& right){
 		return isnt(left, right, "");
 	}
-	
-	extern std::string TODO; 
+
+	extern std::string TODO;
 
 	class todo_guard {
 		const std::string value;
