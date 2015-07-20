@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <cmath>
+#include <functional>
 #include <limits>
 
 namespace TAP {
@@ -86,10 +87,11 @@ namespace TAP {
 		*details::output << "# " << first << second << third << fourth << fifth << std::endl;
 	}
 
-	template<typename T, typename U> bool is(const T& left, const U& right, const std::string& message = "") {
+	template<typename T, typename U, typename BinaryPredicate> 
+	bool is(const T& left, const U& right, const std::string& message, BinaryPredicate p) {
 		using namespace TAP::details;
 		try {
-			bool ret = ok(left == right, message);
+			bool ret = ok(p(left, right), message);
 			if (!ret) {
 				diag(failed_test_msg()," '", message, "'");
 				diag("       Got: ", left);
@@ -115,10 +117,16 @@ namespace TAP {
 		}
 	}
 
-	template<typename T, typename U> bool isnt(const T& left, const U& right, const std::string& message = "") {
+	template<typename T, typename U>
+	bool is(const T& left, const U& right, const std::string& message = "") {
+		return is<T, U, std::equal_to<U> >(left, right, message, std::equal_to<U>());
+	}
+
+	template<typename T, typename U, typename BinaryPredicate> 
+	bool isnt(const T& left, const U& right, const std::string& message, BinaryPredicate p = std::equal_to<void>()) {
 		using namespace TAP::details;
 		try {
-			return ok(left != right, message);
+			return ok(!p(left, right), message);
 		}
 		catch(const std::exception& e) {
 			fail(message);
@@ -134,6 +142,11 @@ namespace TAP {
 		}
 	}
 
+	template<typename T, typename U>
+	bool isnt(const T& left, const U& right, const std::string& message = "") {
+		return isnt<T, U, std::equal_to<U> >(left, right, message, std::equal_to<U>());
+	}
+
   extern double EPSILON;
 
   /***
@@ -143,125 +156,49 @@ namespace TAP {
    *
    * RESULT is dependend on EPSILON, which describes the relative error
    */
-  template<typename T> bool nearly_equal(const T& left, const T& right)
+  template<typename T> 
+  struct nearly_equal
   {
-    T diff = fabs(left - right);
-  	return // Shortcut for equality and infinites
-  				 ( left == right ) || 
-  				 // Very small numbers or very small diff
-  				 // (std::numeric_limits<T>::min() gives the smallest normalized number)
-    			 ( (left == 0 || right == 0 || diff < std::numeric_limits<T>::min()) && 
-             diff < EPSILON * std::numeric_limits<T>::min() ) ||
-    			 // relative error
-           ( 2. * diff / fmin(fabs(left) + fabs(right), std::numeric_limits<T>::max()) < EPSILON );
-  }
+  	bool operator()(const T& left, const T& right) const
+	  {
+	    T diff = fabs(left - right);
+	  	return // Shortcut for equality and infinites
+	  				 ( left == right ) || 
+	  				 // Very small numbers or very small diff
+	  				 // (std::numeric_limits<T>::min() gives the smallest normalized number)
+	    			 ( (left == 0 || right == 0 || diff < std::numeric_limits<T>::min()) && 
+	             diff < EPSILON * std::numeric_limits<T>::min() ) ||
+	    			 // relative error
+	           ( 2. * diff / fmin(fabs(left) + fabs(right), std::numeric_limits<T>::max()) < EPSILON );
+	  }
+	};
 
 	template<> inline bool is<float, float>(const float& left, const float& right, const std::string& message) {
-		using namespace TAP::details;
-		try {
-      bool ret = ok(nearly_equal<float>(left, right), message);
-			if (!ret) {
-				diag(failed_test_msg()," '", message, "'");
-				diag("       Got: ", left);
-				diag("  Expected: ", right);
-			}
-			return ret;
-		}
-		catch(const std::exception& e) {
-			fail(message);
-			diag(failed_test_msg()," '", message, "'");
-			diag("Caught exception '", e.what(), "'");
-			diag("       Got: ", left);
-			diag("  Expected: ", right);
-			return false;
-		}
-		catch(...) {
-			fail(message);
-			diag(failed_test_msg()," '", message, "'");
-			diag("Caught unknown exception");
-			diag("       Got: ", left);
-			diag("  Expected: ", right);
-			return false;
-		}
-	}
+  	return is< float, float, nearly_equal<float> >(left, right, message, nearly_equal<float>());
+  }
+
+	template<> inline bool is<double, double>(const double& left, const double& right, const std::string& message) {
+  	return is< double, double, nearly_equal<double> >(left, right, message, nearly_equal<double>());
+  }
+
+	template<> inline bool isnt<float, float>(const float& left, const float& right, const std::string& message) {
+  	return isnt< float, float, nearly_equal<float> >(left, right, message, nearly_equal<float>());
+  }
+
+	template<> inline bool isnt<double, double>(const double& left, const double& right, const std::string& message) {
+  	return isnt< double, double, nearly_equal<double> >(left, right, message, nearly_equal<double>());
+  }
 
 	inline bool is(const float& left, const float& right){
 		return is(left, right, "");
-	}
-
-	template<> inline bool is<double, double>(const double& left, const double& right, const std::string& message) {
-		using namespace TAP::details;
-		try {
-      bool ret = ok(nearly_equal<double>(left, right), message);
-			if (!ret) {
-				diag(failed_test_msg()," '", message, "'");
-				diag("       Got: ", left);
-				diag("  Expected: ", right);
-			}
-			return ret;
-		}
-		catch(const std::exception& e) {
-			fail(message);
-			diag(failed_test_msg()," '", message, "'");
-			diag("Caught exception '", e.what(), "'");
-			diag("       Got: ", left);
-			diag("  Expected: ", right);
-			return false;
-		}
-		catch(...) {
-			fail(message);
-			diag(failed_test_msg()," '", message, "'");
-			diag("Caught unknown exception");
-			diag("       Got: ", left);
-			diag("  Expected: ", right);
-			return false;
-		}
 	}
 
 	inline bool is(const double& left, const double& right){
 		return is(left, right, "");
 	}
 
-	template<> inline bool isnt<float, float>(const float& left, const float& right, const std::string& message) {
-		using namespace TAP::details;
-		try {
-      return ok(!nearly_equal<float>(left, right), message);
-		}
-		catch(const std::exception& e) {
-			fail(message);
-			diag(failed_test_msg()," '", message, "'");
-			diag("Caught exception '", e.what(), "'");
-			return false;
-		}
-		catch(...) {
-			fail(message);
-			diag(failed_test_msg()," '", message, "'");
-			diag("Caught unknown exception");
-			return false;
-		}
-	}
-
 	inline bool isnt(const float& left, const float& right){
 		return isnt(left, right, "");
-	}
-
-	template<> inline bool isnt<double, double>(const double& left, const double& right, const std::string& message) {
-		using namespace TAP::details;
-		try {
-      return ok(!nearly_equal<double>(left, right), message);
-		}
-		catch(const std::exception& e) {
-			fail(message);
-			diag(failed_test_msg()," '", message, "'");
-			diag("Caught exception '", e.what(), "'");
-			return false;
-		}
-		catch(...) {
-			fail(message);
-			diag(failed_test_msg()," '", message, "'");
-			diag("Caught unknown exception");
-			return false;
-		}
 	}
 
 	inline bool isnt(const double& left, const double& right){
