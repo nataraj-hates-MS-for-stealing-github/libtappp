@@ -123,7 +123,7 @@ namespace TAP {
 	}
 
 	template<typename T, typename U, typename BinaryPredicate> 
-	bool isnt(const T& left, const U& right, const std::string& message, BinaryPredicate p = std::equal_to<void>()) {
+	bool isnt(const T& left, const U& right, const std::string& message, BinaryPredicate p) {
 		using namespace TAP::details;
 		try {
 			return ok(!p(left, right), message);
@@ -174,22 +174,46 @@ namespace TAP {
 	};
 
 	template<> inline bool is<float, float>(const float& left, const float& right, const std::string& message) {
-  	return is< float, float, nearly_equal<float> >(left, right, message, nearly_equal<float>());
+  	return is(left, right, message, nearly_equal<float>());
+  }
+
+	template<> inline bool is<float, double>(const float& left, const double& right, const std::string& message) {
+  	return is(left, right, message, nearly_equal<float>());
+  }
+
+	template<> inline bool is<double, float>(const double& left, const float& right, const std::string& message) {
+  	return is(left, right, message, nearly_equal<float>());
   }
 
 	template<> inline bool is<double, double>(const double& left, const double& right, const std::string& message) {
-  	return is< double, double, nearly_equal<double> >(left, right, message, nearly_equal<double>());
+  	return is(left, right, message, nearly_equal<double>());
   }
 
 	template<> inline bool isnt<float, float>(const float& left, const float& right, const std::string& message) {
-  	return isnt< float, float, nearly_equal<float> >(left, right, message, nearly_equal<float>());
+  	return isnt(left, right, message, nearly_equal<float>());
+  }
+
+	template<> inline bool isnt<float, double>(const float& left, const double& right, const std::string& message) {
+  	return isnt(left, right, message, nearly_equal<float>());
+  }
+
+	template<> inline bool isnt<double, float>(const double& left, const float& right, const std::string& message) {
+  	return isnt(left, right, message, nearly_equal<float>());
   }
 
 	template<> inline bool isnt<double, double>(const double& left, const double& right, const std::string& message) {
-  	return isnt< double, double, nearly_equal<double> >(left, right, message, nearly_equal<double>());
+  	return isnt(left, right, message, nearly_equal<double>());
   }
 
 	inline bool is(const float& left, const float& right){
+		return is(left, right, "");
+	}
+
+	inline bool is(const float& left, const double& right){
+		return is(left, right, "");
+	}
+
+	inline bool is(const double& left, const float& right){
 		return is(left, right, "");
 	}
 
@@ -198,6 +222,14 @@ namespace TAP {
 	}
 
 	inline bool isnt(const float& left, const float& right){
+		return isnt(left, right, "");
+	}
+
+	inline bool isnt(const float& left, const double& right){
+		return isnt(left, right, "");
+	}
+
+	inline bool isnt(const double& left, const float& right){
 		return isnt(left, right, "");
 	}
 
