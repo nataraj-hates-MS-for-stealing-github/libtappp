@@ -119,7 +119,7 @@ namespace TAP {
 
 	template<typename T, typename U>
 	bool is(const T& left, const U& right, const std::string& message = "") {
-		return is<T, U, std::equal_to<U> >(left, right, message, std::equal_to<U>());
+		return is(left, right, message, std::equal_to<T>());
 	}
 
 	template<typename T, typename U, typename BinaryPredicate> 
@@ -144,7 +144,7 @@ namespace TAP {
 
 	template<typename T, typename U>
 	bool isnt(const T& left, const U& right, const std::string& message = "") {
-		return isnt<T, U, std::equal_to<U> >(left, right, message, std::equal_to<U>());
+		return isnt(left, right, message, std::equal_to<T>());
 	}
 
   extern double EPSILON;
