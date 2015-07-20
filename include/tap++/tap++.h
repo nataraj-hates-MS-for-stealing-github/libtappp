@@ -136,15 +136,30 @@ namespace TAP {
 
   extern double EPSILON;
 
+  /***
+   * Compare two floating point numbers for (nearly) equality. 
+   * Follows the floating point guide at
+   * http://floating-point-gui.de/errors/comparison/ 
+   *
+   * RESULT is dependend on EPSILON, which describes the relative error
+   */
+  template<typename T> bool nearly_equal(const T& left, const T& right)
+  {
+    T diff = fabs(left - right);
+  	return // Shortcut for equality and infinites
+  				 ( left == right ) || 
+  				 // Very small numbers or very small diff
+  				 // (std::numeric_limits<T>::min() gives the smallest normalized number)
+    			 ( (left == 0 || right == 0 || diff < std::numeric_limits<T>::min()) && 
+             diff < EPSILON * std::numeric_limits<T>::min() ) ||
+    			 // relative error
+           ( 2. * diff / fmin(fabs(left) + fabs(right), std::numeric_limits<T>::max()) < EPSILON );
+  }
+
 	template<> inline bool is<float, float>(const float& left, const float& right, const std::string& message) {
 		using namespace TAP::details;
 		try {
-      double diff = fabs(left - right);
-      bool ret = ok(
-          ( left == right ) || // Shortcut for equality
-          ( (left == 0. || right == 0. || diff < std::numeric_limits<float>::min()) && // Very small numbers
-            diff < EPSILON * std::numeric_limits<float>::min() ) ||
-          ( 2. * diff / fmin(fabs(left) + fabs(right), std::numeric_limits<float>::max()) < EPSILON ), message ); // Relative error
+      bool ret = ok(nearly_equal<float>(left, right), message);
 			if (!ret) {
 				diag(failed_test_msg()," '", message, "'");
 				diag("       Got: ", left);
@@ -177,12 +192,7 @@ namespace TAP {
 	template<> inline bool is<double, double>(const double& left, const double& right, const std::string& message) {
 		using namespace TAP::details;
 		try {
-      double diff = fabs(left - right);
-      bool ret = ok(
-          ( left == right ) || // Shortcut for equality
-          ( (left == 0. || right == 0. || diff < std::numeric_limits<double>::min()) && // Very small numbers
-            diff < EPSILON * std::numeric_limits<double>::min() ) ||
-          ( 2. * diff / fmin(fabs(left) + fabs(right), std::numeric_limits<double>::max()) < EPSILON ), message ); // Relative error
+      bool ret = ok(nearly_equal<double>(left, right), message);
 			if (!ret) {
 				diag(failed_test_msg()," '", message, "'");
 				diag("       Got: ", left);
@@ -215,13 +225,7 @@ namespace TAP {
 	template<> inline bool isnt<float, float>(const float& left, const float& right, const std::string& message) {
 		using namespace TAP::details;
 		try {
-      double diff = fabs(left - right);
-      bool ret = ok(!(
-          ( left == right ) || // Shortcut for equality
-          ( (left == 0. || right == 0. || diff < std::numeric_limits<float>::min()) && // Very small numbers
-            diff < EPSILON * std::numeric_limits<float>::min() ) ||
-          ( 2. * diff / fmin(fabs(left) + fabs(right), std::numeric_limits<float>::max()) < EPSILON )), message ); // Relative error
-			return ret;
+      return ok(!nearly_equal<float>(left, right), message);
 		}
 		catch(const std::exception& e) {
 			fail(message);
@@ -244,13 +248,7 @@ namespace TAP {
 	template<> inline bool isnt<double, double>(const double& left, const double& right, const std::string& message) {
 		using namespace TAP::details;
 		try {
-      double diff = fabs(left - right);
-      bool ret = ok(!(
-          ( left == right ) || // Shortcut for equality
-          ( (left == 0. || right == 0. || diff < std::numeric_limits<double>::min()) && // Very small numbers
-            diff < EPSILON * std::numeric_limits<double>::min() ) ||
-          ( 2. * diff / fmin(fabs(left) + fabs(right), std::numeric_limits<double>::max()) < EPSILON )), message ); // Relative error
-			return ret;
+      return ok(!nearly_equal<double>(left, right), message);
 		}
 		catch(const std::exception& e) {
 			fail(message);
