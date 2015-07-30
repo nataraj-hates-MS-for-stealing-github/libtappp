@@ -5,6 +5,8 @@
 #include <cstdlib>
 
 namespace TAP {
+  double EPSILON = 1.e-4;
+
 	std::string TODO = "";
 
 	const details::skip_all_type skip_all = details::skip_all_type();
@@ -183,7 +185,7 @@ namespace TAP {
 		}
 
 	}
-	
+
 	void skip(const std::string& reason) throw(details::Skip_exception) {
 		throw details::Skip_exception(reason);
 	}

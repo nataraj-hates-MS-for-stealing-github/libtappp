@@ -1,15 +1,12 @@
-ifndef CXX
-CXX = g++
-endif
-
-ACK = ack
-LIB = libtap++.so
-WARNINGS = -Wall -Wextra -Weffc++
-DEBUG = -ggdb3 -DDEBUG
-CXXFLAGS = $(DEBUG) $(WARNINGS) -fPIC
-PREFIX=/usr/local
-LIBRARY_VAR=LD_LIBRARY_PATH
-TEST_GOALS = t/00-sanity.t
+CXX ?= g++
+ACK := ack
+LIB := libtap++.so
+WARNINGS := -Wall -Wextra -Weffc++
+DEBUG := -ggdb3 -DDEBUG
+CXXFLAGS := $(DEBUG) $(WARNINGS) -fPIC
+PREFIX := /usr/local
+LIBRARY_VAR := LD_LIBRARY_PATH
+TEST_GOALS := t/00-sanity.t
 
 all: $(LIB)
 
@@ -17,7 +14,7 @@ $(LIB): src/tap++.cpp include/tap++/tap++.h
 	$(CXX) -shared -o $@ -Wl,-soname,$(LIB) $(CXXFLAGS) -Iinclude/ src/*.cpp
 
 t/%.t: t/%.cpp $(LIB)
-	$(CXX) $(CXXFLAGS) -L. -ltap++ -Iinclude -o $@ $<
+	$(CXX) $(CXXFLAGS) -Iinclude -o $@ $< -L. -ltap++
 
 testbuild: $(TEST_GOALS)
 
