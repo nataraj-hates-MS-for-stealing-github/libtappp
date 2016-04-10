@@ -7,6 +7,10 @@
 #include <functional>
 #include <limits>
 
+#ifdef _MSC_VER
+#pragma warning( disable : 4290 ) // MSVC: https://msdn.microsoft.com/en-us/library/sa28fef8.aspx
+#endif
+
 namespace TAP {
 	namespace details {
 		struct skip_all_type {};
@@ -178,11 +182,11 @@ namespace TAP {
   }
 
 	template<> inline bool is<float, double>(const float& left, const double& right, const std::string& message) {
-  	return is(left, right, message, nearly_equal<float>());
+  	return is(left, right, message, nearly_equal<double>());
   }
 
 	template<> inline bool is<double, float>(const double& left, const float& right, const std::string& message) {
-  	return is(left, right, message, nearly_equal<float>());
+  	return is(left, right, message, nearly_equal<double>());
   }
 
 	template<> inline bool is<double, double>(const double& left, const double& right, const std::string& message) {
@@ -194,11 +198,11 @@ namespace TAP {
   }
 
 	template<> inline bool isnt<float, double>(const float& left, const double& right, const std::string& message) {
-  	return isnt(left, right, message, nearly_equal<float>());
+  	return isnt(left, right, message, nearly_equal<double>());
   }
 
 	template<> inline bool isnt<double, float>(const double& left, const float& right, const std::string& message) {
-  	return isnt(left, right, message, nearly_equal<float>());
+  	return isnt(left, right, message, nearly_equal<double>());
   }
 
 	template<> inline bool isnt<double, double>(const double& left, const double& right, const std::string& message) {

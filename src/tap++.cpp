@@ -3,6 +3,7 @@
 #include <stack>
 #include <sstream>
 #include <cstdlib>
+#include <algorithm>
 
 namespace TAP {
   double EPSILON = 1.e-4;
