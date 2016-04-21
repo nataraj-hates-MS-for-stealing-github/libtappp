@@ -16,4 +16,4 @@ my $harness = TAP::Harness->new( {
     color => 1,
 });
 
-$harness->runtests(@ARGV);
+$harness->runtests(@ARGV)->all_passed or exit 1;
