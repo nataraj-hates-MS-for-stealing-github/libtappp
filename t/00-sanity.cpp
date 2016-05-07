@@ -11,7 +11,7 @@ class exception : public std::exception {
 public:
     exception(const std::string& _message) : message(_message) {
     }
-    const char* what() {
+    virtual const char* what() const throw() {
         return message.c_str();
     }
     ~exception() throw() {
